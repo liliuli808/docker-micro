@@ -1,0 +1,37 @@
+version: '2'
+services:
+  etcd:
+    image: registry.cn-hangzhou.aliyuncs.com/mainto_micro/etcd-service-dev:latest
+    container_name: some-etcd
+    ports:
+     - "2379:2379" # etcd port
+     - "2380:2380" # etcd sync port
+    networks:
+      - local_micro
+  rabbitmq:
+    image: registry.cn-hangzhou.aliyuncs.com/mainto_micro/service-rabbitmq-master:latest
+    container_name: some-rabbit
+    ports:
+#     - "8083:15672" # rabbitmq web manager port
+     - "5672:5672"  # rabbitmq port
+    networks:
+      - local_micro
+  api-proxy:
+    image: registry.cn-hangzhou.aliyuncs.com/mainto_micro/api-proxy-dev:latest
+    container_name: some-api-proxy
+    ports:
+     - "3080:3080" # api port
+     - "3006:3006" # websocket port
+    depends_on:
+      - "etcd"
+      - "rabbitmq"
+    environment:
+     - RABBITMQ_USERNAME=guest
+     - RABBITMQ_PASSWORD=guest
+     - RABBITMQ_SERVER=some-rabbit
+     - CONFIG_SERVER=some-etcd:2379
+    networks:
+      - local_micro
+networks:
+  local_micro:
+

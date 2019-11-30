@@ -1,0 +1,11 @@
+version: "3.1"
+
+services:
+  redis:
+    image: redis:${REDIS_VERSION}
+    restart: always
+    volumes:
+      - ${REDIS_DATA}:/data
+      - ${REDIS_CONF}:/usr/local/etc/redis/redis.conf
+    ports:
+      - ${REDIS_PORT}:6379
